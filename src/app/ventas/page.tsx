@@ -27,7 +27,11 @@ export default function VentasPage() {
   }, [session, status, router])
 
   if (status === 'loading' || loading) {
-    return <div className="text-center py-8">Cargando...</div>
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-ink/30 font-mono text-sm">Cargando...</div>
+      </div>
+    )
   }
 
   if (!session) {
@@ -45,70 +49,84 @@ export default function VentasPage() {
   }, {} as Record<string, { count: number; total: number }>)
 
   return (
-    <div className="py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Reporte de Ventas</h1>
-        <Link href="/ventas/nueva" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Nueva Venta
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="flex justify-between items-start mb-10">
+        <div>
+          <p className="stat-label mb-2">Reporte de ventas</p>
+          <p className="font-mono text-4xl font-bold text-ink">
+            ${totalMoney.toFixed(2)}
+          </p>
+        </div>
+        <Link href="/ventas/nueva" className="btn-primary">
+          Nueva venta
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Total Dinero Recaudado</h3>
-          <p className="text-3xl font-bold">${totalMoney.toFixed(2)}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Total Ventas Realizadas</h3>
-          <p className="text-3xl font-bold">{sales.length}</p>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 className="text-lg font-semibold mb-4">Ventas por Producto</h3>
+      <div className="card mb-8">
+        <h3 className="font-display text-xl text-ink mb-4">Por producto</h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b">
-                <th className="text-left py-2">Producto</th>
-                <th className="text-right py-2">Vendidos</th>
-                <th className="text-right py-2">Total</th>
+              <tr>
+                <th className="table-header text-left pb-3">Producto</th>
+                <th className="table-header text-right pb-3">Unidades</th>
+                <th className="table-header text-right pb-3">Total</th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(productSales).map(([name, data]) => (
-                <tr key={name} className="border-b">
-                  <td className="py-2">{name}</td>
-                  <td className="text-right py-2">{data.count}</td>
-                  <td className="text-right py-2">${data.total.toFixed(2)}</td>
+                <tr key={name} className="table-row">
+                  <td className="py-3 text-ink/80">{name}</td>
+                  <td className="py-3 text-right font-mono text-sm text-ink/50">{data.count}</td>
+                  <td className="py-3 text-right font-mono text-sm text-ink/70">${data.total.toFixed(2)}</td>
                 </tr>
               ))}
+              {Object.keys(productSales).length === 0 && (
+                <tr>
+                  <td colSpan={3} className="py-8 text-center text-ink/30 text-sm">
+                    Sin ventas registradas
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Detalle de Ventas</h3>
+      <div className="card">
+        <h3 className="font-display text-xl text-ink mb-4">Historial</h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b">
-                <th className="text-left py-2">Fecha</th>
-                <th className="text-left py-2">Producto</th>
-                <th className="text-right py-2">Monto</th>
-                <th className="text-left py-2">Pago</th>
+              <tr>
+                <th className="table-header text-left pb-3">Fecha</th>
+                <th className="table-header text-left pb-3">Producto</th>
+                <th className="table-header text-right pb-3">Monto</th>
+                <th className="table-header text-left pb-3">Pago</th>
               </tr>
             </thead>
             <tbody>
               {sales.map(sale => (
-                <tr key={sale.id} className="border-b">
-                  <td className="py-2">{new Date(sale.createdAt).toLocaleDateString()}</td>
-                  <td className="py-2">{sale.productName}</td>
-                  <td className="text-right py-2">${sale.saleAmount.toFixed(2)}</td>
-                  <td className="py-2 capitalize">{sale.paymentMethod}</td>
+                <tr key={sale.id} className="table-row">
+                  <td className="py-3 text-sm text-ink/50">
+                    {new Date(sale.createdAt).toLocaleDateString('es', { day: 'numeric', month: 'short' })}
+                  </td>
+                  <td className="py-3 text-ink/80">{sale.productName}</td>
+                  <td className="py-3 text-right font-mono text-sm text-ink/70">${sale.saleAmount.toFixed(2)}</td>
+                  <td className="py-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                      {sale.paymentMethod}
+                    </span>
+                  </td>
                 </tr>
               ))}
+              {sales.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-ink/30 text-sm">
+                    Sin ventas registradas
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

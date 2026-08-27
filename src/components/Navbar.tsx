@@ -7,37 +7,38 @@ export default function Navbar() {
   const { data: session } = useSession()
 
   return (
-    <nav className="bg-blue-600 text-white shadow-lg">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <Link href="/" className="text-xl font-bold">
+    <nav className="bg-ink text-paper">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex justify-between items-center h-[73px]">
+          <Link href="/" className="font-display text-2xl tracking-tight">
             Ventas
           </Link>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-6">
             {session ? (
               <>
-                <Link href="/ventas" className="hover:text-blue-200">
-                  Ventas
+                <Link href="/ventas" className="text-sm font-medium text-paper/70 hover:text-paper transition-colors">
+                  Reporte
                 </Link>
-                <Link href="/ventas/nueva" className="hover:text-blue-200">
+                <Link href="/ventas/nueva" className="btn-primary text-sm !px-4 !py-2">
                   Nueva Venta
                 </Link>
-                <span className="text-blue-200">{session.user?.email}</span>
+                <div className="h-6 w-px bg-paper/20" />
+                <span className="text-sm text-paper/50">{session.user?.email}</span>
                 <button
                   onClick={() => signOut()}
-                  className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded"
+                  className="text-sm text-paper/50 hover:text-paper transition-colors"
                 >
                   Salir
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="hover:text-blue-200">
-                  Login
+                <Link href="/login" className="text-sm font-medium text-paper/70 hover:text-paper transition-colors">
+                  Entrar
                 </Link>
-                <Link href="/register" className="hover:text-blue-200">
-                  Registro
+                <Link href="/register" className="btn-primary text-sm !px-4 !py-2">
+                  Crear cuenta
                 </Link>
               </>
             )}

@@ -1,19 +1,26 @@
 import type { Metadata } from "next"
-import localFont from "next/font/local"
+import { DM_Serif_Display, Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/components/AuthProvider"
 import Navbar from "@/components/Navbar"
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const dmSerif = DM_Serif_Display({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-dm-serif",
+  display: "swap",
 })
 
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -28,10 +35,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${dmSerif.variable} ${inter.variable} ${jetbrains.variable} font-body antialiased`}>
         <AuthProvider>
           <Navbar />
-          <main className="container mx-auto px-4 py-8">
+          <main className="min-h-[calc(100vh-73px)]">
             {children}
           </main>
         </AuthProvider>

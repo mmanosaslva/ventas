@@ -22,17 +22,27 @@ export default function Home() {
   }, [session])
 
   if (status === 'loading' || loading) {
-    return <div className="text-center py-8">Cargando...</div>
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-ink/30 font-mono text-sm">Cargando...</div>
+      </div>
+    )
   }
 
   if (!session) {
     return (
-      <div className="text-center py-8">
-        <h1 className="text-3xl font-bold mb-4">Sistema de Registro de Ventas</h1>
-        <p className="text-gray-600 mb-6">Inicia sesión para ver tus ventas</p>
-        <Link href="/login" className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
-          Iniciar Sesión
-        </Link>
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="max-w-2xl">
+          <h1 className="font-display text-6xl text-ink mb-4">
+            Control de ventas
+          </h1>
+          <p className="text-lg text-ink/50 mb-8 leading-relaxed">
+            Registra cada venta, rastrea tu dinero, conoce qué se vende.
+          </p>
+          <Link href="/login" className="btn-primary inline-block">
+            Empezar
+          </Link>
+        </div>
       </div>
     )
   }
@@ -44,49 +54,61 @@ export default function Home() {
     return acc
   }, {} as Record<string, number>)
 
-  return (
-    <div className="py-8">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+  const topProducts = Object.entries(productSales)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Total Ventas</h3>
-          <p className="text-3xl font-bold">{totalSales}</p>
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="mb-12">
+        <p className="stat-label mb-2">Total recaudado</p>
+        <p className="font-mono text-6xl font-bold text-ink tracking-tight">
+          ${totalMoney.toFixed(2)}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="card">
+          <p className="stat-label mb-1">Ventas realizadas</p>
+          <p className="stat-number">{totalSales}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Dinero Recaudado</h3>
-          <p className="text-3xl font-bold">${totalMoney.toFixed(2)}</p>
+        <div className="card">
+          <p className="stat-label mb-1">Productos distintos</p>
+          <p className="stat-number">{Object.keys(productSales).length}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-gray-500 text-sm">Productos Distintos</h3>
-          <p className="text-3xl font-bold">{Object.keys(productSales).length}</p>
+        <div className="card">
+          <p className="stat-label mb-1">Promedio por venta</p>
+          <p className="stat-number">
+            ${totalSales > 0 ? (totalMoney / totalSales).toFixed(2) : '0.00'}
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Productos Más Vendidos</h3>
-          <ul className="space-y-2">
-            {Object.entries(productSales)
-              .sort(([, a], [, b]) => b - a)
-              .slice(0, 5)
-              .map(([name, count]) => (
-                <li key={name} className="flex justify-between">
-                  <span>{name}</span>
-                  <span className="font-semibold">{count} vendidos</span>
+        <div className="card">
+          <h3 className="font-display text-xl text-ink mb-4">Más vendidos</h3>
+          {topProducts.length > 0 ? (
+            <ul className="space-y-3">
+              {topProducts.map(([name, count]) => (
+                <li key={name} className="flex justify-between items-baseline">
+                  <span className="text-ink/80">{name}</span>
+                  <span className="font-mono text-sm text-ink/50">{count}</span>
                 </li>
               ))}
-          </ul>
+            </ul>
+          ) : (
+            <p className="text-ink/30 text-sm">Sin ventas aún</p>
+          )}
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Acciones Rápidas</h3>
+        <div className="card">
+          <h3 className="font-display text-xl text-ink mb-4">Acciones</h3>
           <div className="space-y-3">
-            <Link href="/ventas/nueva" className="block w-full bg-green-600 text-white text-center py-3 rounded hover:bg-green-700">
-              Nueva Venta
+            <Link href="/ventas/nueva" className="btn-primary block text-center">
+              Registrar venta
             </Link>
-            <Link href="/ventas" className="block w-full bg-blue-600 text-white text-center py-3 rounded hover:bg-blue-700">
-              Ver Todas las Ventas
+            <Link href="/ventas" className="btn-secondary block text-center">
+              Ver reporte completo
             </Link>
           </div>
         </div>
