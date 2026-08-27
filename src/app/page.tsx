@@ -42,7 +42,7 @@ export default function Home() {
       <div className="mb-12">
         <p className="stat-label mb-2">Total recaudado</p>
         <p className="font-mono text-6xl font-bold text-ink tracking-tight">
-          ${totalMoney.toFixed(2)}
+          ${totalMoney.toLocaleString('es-CO')}
         </p>
       </div>
 
@@ -58,7 +58,7 @@ export default function Home() {
         <div className="card">
           <p className="stat-label mb-1">Promedio por venta</p>
           <p className="stat-number">
-            ${totalSales > 0 ? (totalMoney / totalSales).toFixed(2) : '0.00'}
+            ${totalSales > 0 ? Math.round(totalMoney / totalSales).toLocaleString('es-CO') : '0'}
           </p>
         </div>
       </div>

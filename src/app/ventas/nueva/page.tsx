@@ -86,7 +86,7 @@ export default function NuevaVentaPage() {
                 value={saleAmount}
                 onChange={(e) => setSaleAmount(e.target.value)}
                 className="input-field !pl-8 font-mono"
-                placeholder="0.00"
+                placeholder="0"
                 required
               />
             </div>

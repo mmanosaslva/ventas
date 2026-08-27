@@ -40,7 +40,7 @@ export default function VentasPage() {
       <div className="mb-10">
         <p className="stat-label mb-2">Reporte de ventas</p>
         <p className="font-mono text-4xl font-bold text-ink">
-          ${totalMoney.toFixed(2)}
+          ${totalMoney.toLocaleString('es-CO')}
         </p>
       </div>
 
@@ -60,7 +60,7 @@ export default function VentasPage() {
                 <tr key={name} className="table-row">
                   <td className="py-3 text-ink/80">{name}</td>
                   <td className="py-3 text-right font-mono text-sm text-ink/50">{data.count}</td>
-                  <td className="py-3 text-right font-mono text-sm text-ink/70">${data.total.toFixed(2)}</td>
+                  <td className="py-3 text-right font-mono text-sm text-ink/70">${data.total.toLocaleString('es-CO')}</td>
                 </tr>
               ))}
               {Object.keys(productSales).length === 0 && (
@@ -94,7 +94,7 @@ export default function VentasPage() {
                     {new Date(sale.createdAt).toLocaleDateString('es', { day: 'numeric', month: 'short' })}
                   </td>
                   <td className="py-3 text-ink/80">{sale.productName}</td>
-                  <td className="py-3 text-right font-mono text-sm text-ink/70">${sale.saleAmount.toFixed(2)}</td>
+                  <td className="py-3 text-right font-mono text-sm text-ink/70">${sale.saleAmount.toLocaleString('es-CO')}</td>
                   <td className="py-3">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
                       {sale.paymentMethod}
