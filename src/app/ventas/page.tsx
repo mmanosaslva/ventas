@@ -3,14 +3,12 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { Sale } from '@/lib/types'
 
 export default function VentasPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [sales, setSales] = useState<Sale[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -19,22 +17,11 @@ export default function VentasPage() {
     if (session) {
       fetch('/api/ventas')
         .then(res => res.json())
-        .then(data => {
-          setSales(data)
-          setLoading(false)
-        })
+        .then(data => setSales(data))
     }
   }, [session, status, router])
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-ink/30 font-mono text-sm">Cargando...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
+  if (status === 'loading' || !session) {
     return null
   }
 
@@ -50,16 +37,11 @@ export default function VentasPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <div className="flex justify-between items-start mb-10">
-        <div>
-          <p className="stat-label mb-2">Reporte de ventas</p>
-          <p className="font-mono text-4xl font-bold text-ink">
-            ${totalMoney.toFixed(2)}
-          </p>
-        </div>
-        <Link href="/ventas/nueva" className="btn-primary">
-          Nueva venta
-        </Link>
+      <div className="mb-10">
+        <p className="stat-label mb-2">Reporte de ventas</p>
+        <p className="font-mono text-4xl font-bold text-ink">
+          ${totalMoney.toFixed(2)}
+        </p>
       </div>
 
       <div className="card mb-8">

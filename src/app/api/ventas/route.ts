@@ -11,8 +11,6 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    await prisma.$connect()
-
     const sales = await prisma.sale.findMany({
       where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' }
@@ -25,8 +23,6 @@ export async function GET() {
       { error: 'Error al obtener ventas' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -40,8 +36,6 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const { productName, saleAmount, paymentMethod } = body
-
-    await prisma.$connect()
 
     const sale = await prisma.sale.create({
       data: {
@@ -59,7 +53,5 @@ export async function POST(request: Request) {
       { error: 'Error al registrar venta' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

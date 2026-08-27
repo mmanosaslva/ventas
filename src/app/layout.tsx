@@ -4,6 +4,8 @@ import "./globals.css"
 import { AuthProvider } from "@/components/AuthProvider"
 import Navbar from "@/components/Navbar"
 
+export const dynamic = 'force-dynamic'
+
 const dmSerif = DM_Serif_Display({
   weight: "400",
   subsets: ["latin"],

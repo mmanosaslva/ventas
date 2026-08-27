@@ -2,10 +2,10 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function NuevaVentaPage() {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [productName, setProductName] = useState('')
   const [saleAmount, setSaleAmount] = useState('')
@@ -13,8 +13,13 @@ export default function NuevaVentaPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  if (status === 'unauthenticated') {
-    router.push('/login')
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
+
+  if (status === 'loading' || !session) {
     return null
   }
 
@@ -41,14 +46,6 @@ export default function NuevaVentaPage() {
       setError('Error al conectar con el servidor')
       setLoading(false)
     }
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-ink/30 font-mono text-sm">Cargando...</div>
-      </div>
-    )
   }
 
   return (

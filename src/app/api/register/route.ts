@@ -11,7 +11,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email y contraseña son requeridos' }, { status: 400 })
     }
 
-    await prisma.$connect()
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'La contraseña debe tener al menos 6 caracteres' }, { status: 400 })
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -38,7 +40,5 @@ export async function POST(request: Request) {
       { error: 'Error del servidor. Verifica la conexión a la base de datos.' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,50 +1,29 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Sale } from '@/lib/types'
 
 export default function Home() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [sales, setSales] = useState<Sale[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
     if (session) {
       fetch('/api/ventas')
         .then(res => res.json())
-        .then(data => {
-          setSales(data)
-          setLoading(false)
-        })
+        .then(data => setSales(data))
     }
-  }, [session])
+  }, [session, status, router])
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-ink/30 font-mono text-sm">Cargando...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return (
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <div className="max-w-2xl">
-          <h1 className="font-display text-6xl text-ink mb-4">
-            Control de ventas
-          </h1>
-          <p className="text-lg text-ink/50 mb-8 leading-relaxed">
-            Registra cada venta, rastrea tu dinero, conoce qué se vende.
-          </p>
-          <Link href="/login" className="btn-primary inline-block">
-            Empezar
-          </Link>
-        </div>
-      </div>
-    )
+  if (status === 'loading' || !session) {
+    return null
   }
 
   const totalSales = sales.length
