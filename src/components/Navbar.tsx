@@ -17,7 +17,7 @@ export default function Navbar() {
           {session ? (
             <div className="flex items-center gap-3 ml-auto">
               <Link href="/ventas" className="btn-primary text-sm !px-4 !py-2">
-                Inventario
+                Ventas
               </Link>
               <Link href="/ventas/nueva" className="btn-primary text-sm !px-4 !py-2">
                 Nueva Venta
