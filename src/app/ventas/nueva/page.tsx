@@ -15,6 +15,7 @@ export default function NuevaVentaPage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [productId, setProductId] = useState('')
+  const [quantity, setQuantity] = useState('1')
   const [saleAmount, setSaleAmount] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo')
   const [newName, setNewName] = useState('')
@@ -42,6 +43,23 @@ export default function NuevaVentaPage() {
   }
 
   const isAdding = productId === '__new__'
+  const parsedQty = parseInt(quantity)
+  const qty = isNaN(parsedQty) || parsedQty < 1 ? 1 : parsedQty
+  const selectedProduct = isAdding ? null : products.find(p => p.id === parseInt(productId))
+  const unitPrice = isAdding
+    ? (newPrice.trim() === '' ? null : parseFloat(newPrice))
+    : (selectedProduct?.price ?? null)
+  const hasPrice = unitPrice !== null && !isNaN(unitPrice)
+  const computedTotal = hasPrice ? unitPrice * qty : null
+  const effectiveAmount = computedTotal !== null ? String(computedTotal) : saleAmount
+
+  const updateAmountForPrice = (price: number | null, q: number) => {
+    if (price !== null && !isNaN(price)) {
+      setSaleAmount(String(price * q))
+    } else {
+      setSaleAmount('')
+    }
+  }
 
   const handleProductChange = (value: string) => {
     setProductId(value)
@@ -49,19 +67,37 @@ export default function NuevaVentaPage() {
     if (value === '__new__') {
       setNewName('')
       setNewPrice('')
-      setSaleAmount('')
       return
     }
     const product = products.find(p => p.id === parseInt(value))
-    if (product && product.price !== null) {
-      setSaleAmount(String(product.price))
-    }
+    updateAmountForPrice(product?.price ?? null, qty)
   }
 
   const handleNewPriceChange = (value: string) => {
     setNewPrice(value)
-    if (value !== '') {
-      setSaleAmount(value)
+    if (value.trim() !== '') {
+      const price = parseFloat(value)
+      if (!isNaN(price)) {
+        setSaleAmount(String(price * qty))
+      }
+    } else {
+      setSaleAmount('')
+    }
+  }
+
+  const handleQuantityChange = (value: string) => {
+    const parsed = parseInt(value)
+    const q = isNaN(parsed) || parsed < 1 ? 1 : parsed
+    setQuantity(value)
+    if (isAdding) {
+      if (newPrice.trim() !== '') {
+        const price = parseFloat(newPrice)
+        if (!isNaN(price)) {
+          setSaleAmount(String(price * q))
+        }
+      }
+    } else if (selectedProduct?.price !== null && selectedProduct?.price !== undefined) {
+      setSaleAmount(String(selectedProduct.price * q))
     }
   }
 
@@ -119,7 +155,7 @@ export default function NuevaVentaPage() {
       const res = await fetch('/api/ventas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productName, saleAmount, paymentMethod })
+        body: JSON.stringify({ productName, quantity: qty, saleAmount: effectiveAmount, paymentMethod })
       })
 
       if (!res.ok) {
@@ -150,29 +186,41 @@ export default function NuevaVentaPage() {
             </div>
           )}
 
-          <div>
-            <label className="form-label">Producto</label>
-            <select
-              value={productId}
-              onChange={(e) => handleProductChange(e.target.value)}
-              className="input-field"
-              required
-            >
-              <option value="" disabled>
-                Selecciona un producto
-              </option>
-              {products.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.name}{p.price !== null ? ` — $${p.price.toLocaleString('es-CO')}` : ''}
+          <div className="grid grid-cols-[1fr_110px] gap-3 items-start">
+            <div>
+              <label className="form-label">Producto</label>
+              <select
+                value={productId}
+                onChange={(e) => handleProductChange(e.target.value)}
+                className="input-field"
+                required
+              >
+                <option value="" disabled>
+                  Selecciona
                 </option>
-              ))}
-              <option value="__new__">+ Nuevo producto</option>
-            </select>
-            {products.length === 0 && (
-              <p className="text-xs text-ink/40 mt-2">
-                Aún no hay productos en la lista. Elige &quot;+ Nuevo producto&quot; para agregar el primero.
-              </p>
-            )}
+                {products.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+                <option value="__new__">+ Nuevo producto</option>
+              </select>
+              {products.length === 0 && (
+                <p className="text-xs text-ink/40 mt-2">
+                  Elige &quot;+ Nuevo producto&quot; para agregar el primero.
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="form-label">Cantidad</label>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => handleQuantityChange(e.target.value)}
+                className="input-field font-mono"
+              />
+            </div>
           </div>
 
           {isAdding && (
@@ -207,20 +255,26 @@ export default function NuevaVentaPage() {
           )}
 
           <div>
-            <label className="form-label">Monto</label>
+            <label className="form-label">Monto a pagar</label>
             <div className="relative">
               <span className="absolute left-4 top-3 text-ink/30 font-mono">$</span>
               <input
                 type="number"
                 step="0.01"
                 min="0"
-                value={saleAmount}
+                value={effectiveAmount}
                 onChange={(e) => setSaleAmount(e.target.value)}
-                className="input-field !pl-8 font-mono"
+                readOnly={hasPrice}
+                className="input-field !pl-8 font-mono disabled:opacity-60"
                 placeholder="0"
                 required
               />
             </div>
+            {hasPrice && (
+              <p className="text-xs text-ink/40 mt-2 font-mono">
+                ${unitPrice.toLocaleString('es-CO')} × {qty}
+              </p>
+            )}
           </div>
 
           <div>

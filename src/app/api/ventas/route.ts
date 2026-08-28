@@ -36,10 +36,14 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const { productName, saleAmount, paymentMethod } = body
+    const quantity = body.quantity === undefined || body.quantity === '' || body.quantity === null
+      ? 1
+      : parseInt(body.quantity)
 
     const sale = await prisma.sale.create({
       data: {
         productName,
+        quantity: quantity > 0 ? quantity : 1,
         saleAmount: parseFloat(saleAmount),
         paymentMethod,
         userId: parseInt(session.user.id)

@@ -12,7 +12,7 @@ export default function VentasPage() {
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [editingSale, setEditingSale] = useState<Sale | null>(null)
   const [deletingSale, setDeletingSale] = useState<Sale | null>(null)
-  const [editForm, setEditForm] = useState({ productName: '', saleAmount: '', paymentMethod: 'efectivo' as 'efectivo' | 'transferencia' })
+  const [editForm, setEditForm] = useState({ productName: '', quantity: '1', saleAmount: '', paymentMethod: 'efectivo' as 'efectivo' | 'transferencia' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -45,7 +45,7 @@ export default function VentasPage() {
     if (!acc[sale.productName]) {
       acc[sale.productName] = { count: 0, total: 0, saleIds: [] }
     }
-    acc[sale.productName].count++
+    acc[sale.productName].count += sale.quantity
     acc[sale.productName].total += sale.saleAmount
     acc[sale.productName].saleIds.push(sale.id)
     return acc
@@ -55,6 +55,7 @@ export default function VentasPage() {
     setEditingSale(sale)
     setEditForm({
       productName: sale.productName,
+      quantity: sale.quantity.toString(),
       saleAmount: sale.saleAmount.toString(),
       paymentMethod: sale.paymentMethod as 'efectivo' | 'transferencia'
     })
@@ -269,6 +270,16 @@ export default function VentasPage() {
                   value={editForm.productName}
                   onChange={(e) => setEditForm({ ...editForm, productName: e.target.value })}
                   className="input-field"
+                />
+              </div>
+              <div>
+                <label className="form-label">Cantidad</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editForm.quantity}
+                  onChange={(e) => setEditForm({ ...editForm, quantity: e.target.value })}
+                  className="input-field font-mono"
                 />
               </div>
               <div>

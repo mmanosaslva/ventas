@@ -18,6 +18,9 @@ export async function PUT(
     const isAdmin = session.user.role === 'admin'
     const body = await request.json()
     const { productName, saleAmount, paymentMethod } = body
+    const quantity = body.quantity === undefined || body.quantity === '' || body.quantity === null
+      ? 1
+      : parseInt(body.quantity)
 
     const sale = await prisma.sale.update({
       where: {
@@ -26,6 +29,7 @@ export async function PUT(
       },
       data: {
         productName,
+        quantity: quantity > 0 ? quantity : 1,
         saleAmount: parseFloat(saleAmount),
         paymentMethod
       }

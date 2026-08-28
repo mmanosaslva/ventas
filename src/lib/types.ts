@@ -7,6 +7,7 @@ export interface User {
 export interface Sale {
   id: number
   productName: string
+  quantity: number
   saleAmount: number
   paymentMethod: string
   createdAt: Date
@@ -16,6 +17,7 @@ export interface Sale {
 
 export interface SaleFormData {
   productName: string
+  quantity: number
   saleAmount: number
   paymentMethod: 'efectivo' | 'transferencia'
 }

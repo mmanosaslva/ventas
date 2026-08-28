@@ -6,8 +6,9 @@ registro por ventas
   - Página /productos para ver, agregar, editar y eliminar
 - 3 registros:
   1. Desplegable "producto" desde la lista (+ opción para agregar uno nuevo)
-  2. Caja num "dinero_venta_producto" (se autocompleta si el producto tiene precio, sigue editable)
-  3. Desplegable: pago en efectivo o transaferencia
+  2. Caja num "cantidad"
+  3. Caja num "dinero_venta_producto" (autocompleta = precio × cantidad si el producto tiene precio, sigue editable si no)
+  4. Desplegable: pago en efectivo o transaferencia
 - Reporte de ventas:
   - Total de ventas por producto
   - Total de dinero recaudado
