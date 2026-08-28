@@ -41,7 +41,7 @@ export default function Home() {
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="mb-12">
         <p className="stat-label mb-2">Total recaudado</p>
-        <p className="font-mono text-6xl font-bold text-ink tracking-tight">
+        <p className="font-mono text-4xl md:text-6xl font-bold text-ink tracking-tight">
           ${totalMoney.toLocaleString('es-CO')}
         </p>
       </div>

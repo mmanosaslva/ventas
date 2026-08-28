@@ -42,7 +42,7 @@ select:focus {
   }
 
   .stat-number {
-    @apply font-mono text-4xl font-bold tracking-tight text-ink;
+    @apply font-mono text-2xl md:text-4xl font-bold tracking-tight text-ink;
   }
 
   .stat-label {

@@ -159,7 +159,7 @@ export default function VentasPage() {
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="mb-10">
         <p className="stat-label mb-2">Reporte de ventas</p>
-        <p className="font-mono text-4xl font-bold text-ink">
+        <p className="font-mono text-2xl md:text-4xl font-bold text-ink">
           ${totalMoney.toLocaleString('es-CO')}
         </p>
       </div>
