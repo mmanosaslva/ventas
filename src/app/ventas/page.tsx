@@ -39,6 +39,7 @@ export default function VentasPage() {
 
   if (status === 'loading' || !session) return null
 
+  const isAdmin = session.user.role === 'admin'
   const totalMoney = sales.reduce((sum, sale) => sum + sale.saleAmount, 0)
   const productSales = sales.reduce((acc, sale) => {
     if (!acc[sale.productName]) {
@@ -136,7 +137,7 @@ export default function VentasPage() {
       {openMenu === menuKey && (
         <div
           data-menu-content
-          className="absolute right-0 top-full mt-1 bg-paper border border-ledger rounded-lg shadow-lg z-10 min-w-[120px] flex flex-col"
+          className="absolute right-0 top-full mt-1 bg-paper border border-ledger rounded-lg shadow-lg z-10 flex flex-col"
         >
           <button
             onClick={() => openEditModal(sale)}
@@ -219,6 +220,7 @@ export default function VentasPage() {
                 <th className="table-header text-left pb-3">Producto</th>
                 <th className="table-header text-right pb-3">Monto</th>
                 <th className="table-header text-left pb-3">Pago</th>
+                {isAdmin && <th className="table-header text-left pb-3">Usuario</th>}
                 <th className="table-header text-right pb-3 w-10"></th>
               </tr>
             </thead>
@@ -235,6 +237,9 @@ export default function VentasPage() {
                       {sale.paymentMethod}
                     </span>
                   </td>
+                  {isAdmin && (
+                    <td className="py-3 text-sm text-ink/50">{sale.user?.email || '-'}</td>
+                  )}
                   <td className="py-3 text-right">
                     <MenuDropdown sale={sale} menuKey={`sale-${sale.id}`} />
                   </td>
@@ -242,7 +247,7 @@ export default function VentasPage() {
               ))}
               {sales.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-ink/30 text-sm">
+                  <td colSpan={isAdmin ? 6 : 5} className="py-8 text-center text-ink/30 text-sm">
                     Sin ventas registradas
                   </td>
                 </tr>

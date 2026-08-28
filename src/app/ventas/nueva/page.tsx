@@ -4,12 +4,21 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+interface Product {
+  id: number
+  name: string
+  price: number | null
+}
+
 export default function NuevaVentaPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [productName, setProductName] = useState('')
+  const [products, setProducts] = useState<Product[]>([])
+  const [productId, setProductId] = useState('')
   const [saleAmount, setSaleAmount] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo')
+  const [newName, setNewName] = useState('')
+  const [newPrice, setNewPrice] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -19,8 +28,41 @@ export default function NuevaVentaPage() {
     }
   }, [status, router])
 
+  useEffect(() => {
+    if (session) {
+      fetch('/api/productos')
+        .then(res => res.json())
+        .then(data => setProducts(Array.isArray(data) ? data : []))
+        .catch(() => {})
+    }
+  }, [session])
+
   if (status === 'loading' || !session) {
     return null
+  }
+
+  const isAdding = productId === '__new__'
+
+  const handleProductChange = (value: string) => {
+    setProductId(value)
+    setError('')
+    if (value === '__new__') {
+      setNewName('')
+      setNewPrice('')
+      setSaleAmount('')
+      return
+    }
+    const product = products.find(p => p.id === parseInt(value))
+    if (product && product.price !== null) {
+      setSaleAmount(String(product.price))
+    }
+  }
+
+  const handleNewPriceChange = (value: string) => {
+    setNewPrice(value)
+    if (value !== '') {
+      setSaleAmount(value)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,6 +71,51 @@ export default function NuevaVentaPage() {
     setError('')
 
     try {
+      let productName = ''
+
+      if (isAdding) {
+        const name = newName.trim()
+        if (!name) {
+          setError('Escribe el nombre del nuevo producto')
+          setLoading(false)
+          return
+        }
+
+        const price = newPrice.trim() === '' ? null : parseFloat(newPrice)
+
+        const createRes = await fetch('/api/productos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, price })
+        })
+
+        if (createRes.ok) {
+          const created: Product = await createRes.json()
+          setProducts(prev => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)))
+          productName = created.name
+        } else if (createRes.status === 409) {
+          const existing = products.find(p => p.name.toLowerCase() === name.toLowerCase())
+          if (!existing) {
+            setError('Ese producto ya existe en la lista. Selecciónalo desde el desplegable.')
+            setLoading(false)
+            return
+          }
+          productName = existing.name
+        } else {
+          setError('Error al agregar el producto')
+          setLoading(false)
+          return
+        }
+      } else {
+        const product = products.find(p => p.id === parseInt(productId))
+        if (!product) {
+          setError('Selecciona un producto')
+          setLoading(false)
+          return
+        }
+        productName = product.name
+      }
+
       const res = await fetch('/api/ventas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,15 +152,59 @@ export default function NuevaVentaPage() {
 
           <div>
             <label className="form-label">Producto</label>
-            <input
-              type="text"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+            <select
+              value={productId}
+              onChange={(e) => handleProductChange(e.target.value)}
               className="input-field"
-              placeholder="Camiseta azul"
               required
-            />
+            >
+              <option value="" disabled>
+                Selecciona un producto
+              </option>
+              {products.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.name}{p.price !== null ? ` — $${p.price.toLocaleString('es-CO')}` : ''}
+                </option>
+              ))}
+              <option value="__new__">+ Nuevo producto</option>
+            </select>
+            {products.length === 0 && (
+              <p className="text-xs text-ink/40 mt-2">
+                Aún no hay productos en la lista. Elige &quot;+ Nuevo producto&quot; para agregar el primero.
+              </p>
+            )}
           </div>
+
+          {isAdding && (
+            <div className="card !p-4 space-y-3">
+              <p className="text-sm font-medium text-ink/60">Nuevo producto</p>
+              <div>
+                <label className="form-label !mb-1">Nombre</label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="input-field"
+                  placeholder="Camiseta azul"
+                />
+              </div>
+              <div>
+                <label className="form-label !mb-1">Precio (opcional)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-ink/30 font-mono">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newPrice}
+                    onChange={(e) => handleNewPriceChange(e.target.value)}
+                    className="input-field !pl-8 font-mono"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="form-label">Monto</label>

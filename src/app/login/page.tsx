@@ -3,7 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import Link from 'next/link'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -34,6 +34,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/logo.png"
+            alt="ABIMarine"
+            width={120}
+            height={40}
+            priority
+          />
+        </div>
+
         <div className="mb-8">
           <h1 className="font-display text-4xl text-ink mb-2">Entrar</h1>
           <p className="text-ink/40">Accede a tu panel de ventas</p>
@@ -77,13 +87,6 @@ export default function LoginPage() {
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
-
-          <p className="text-center text-sm text-ink/40">
-            ¿No tienes cuenta?{' '}
-            <Link href="/register" className="text-copper hover:text-copper-dark transition-colors">
-              Crear cuenta
-            </Link>
-          </p>
         </form>
       </div>
     </div>

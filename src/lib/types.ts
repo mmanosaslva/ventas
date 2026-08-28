@@ -11,6 +11,7 @@ export interface Sale {
   paymentMethod: string
   createdAt: Date
   userId: number
+  user?: { email: string; name: string | null }
 }
 
 export interface SaleFormData {

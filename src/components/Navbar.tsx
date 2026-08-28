@@ -3,17 +3,20 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function Navbar() {
   const { data: session } = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
+  const isAdmin = session?.user?.role === 'admin'
 
   return (
     <nav className="bg-ink text-paper">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-[73px]">
-          <Link href="/" className="font-display text-2xl tracking-tight shrink-0">
-            Inventario
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image src="/logo.png" alt="Logo" width={36} height={36} className="rounded brightness-0 invert" />
+            <span className="font-display text-2xl tracking-tight">Inventario</span>
           </Link>
 
           <button
@@ -38,6 +41,14 @@ export default function Navbar() {
               <Link href="/ventas/nueva" className="btn-primary text-sm !px-4 !py-2" onClick={() => setMenuOpen(false)}>
                 Nueva Venta
               </Link>
+              <Link href="/productos" className="btn-primary text-sm !px-4 !py-2" onClick={() => setMenuOpen(false)}>
+                Productos
+              </Link>
+              {isAdmin && (
+                <Link href="/admin" className="btn-primary text-sm !px-4 !py-2" onClick={() => setMenuOpen(false)}>
+                  Admin
+                </Link>
+              )}
               <div className="hidden sm:block h-6 w-px bg-paper/20 mx-1" />
               <span className="text-sm text-paper/50">{session.user?.email}</span>
               <button
@@ -47,16 +58,7 @@ export default function Navbar() {
                 Salir
               </button>
             </div>
-          ) : (
-            <div className={`${menuOpen ? 'flex' : 'hidden'} sm:flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:ml-auto absolute sm:static top-[73px] left-0 right-0 bg-ink sm:bg-transparent px-6 sm:px-0 py-4 sm:py-0 z-20`}>
-              <Link href="/login" className="btn-primary text-sm !px-4 !py-2" onClick={() => setMenuOpen(false)}>
-                Entrar
-              </Link>
-              <Link href="/register" className="btn-primary text-sm !px-4 !py-2" onClick={() => setMenuOpen(false)}>
-                Crear cuenta
-              </Link>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </nav>

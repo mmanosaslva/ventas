@@ -15,13 +15,14 @@ export async function PUT(
     }
 
     const { id } = await params
+    const isAdmin = session.user.role === 'admin'
     const body = await request.json()
     const { productName, saleAmount, paymentMethod } = body
 
     const sale = await prisma.sale.update({
       where: {
         id: parseInt(id),
-        userId: parseInt(session.user.id)
+        ...(isAdmin ? {} : { userId: parseInt(session.user.id) })
       },
       data: {
         productName,
@@ -33,10 +34,7 @@ export async function PUT(
     return NextResponse.json(sale)
   } catch (error) {
     console.error('PUT sale error:', error)
-    return NextResponse.json(
-      { error: 'Error al actualizar venta' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error al actualizar venta' }, { status: 500 })
   }
 }
 
@@ -52,20 +50,18 @@ export async function DELETE(
     }
 
     const { id } = await params
+    const isAdmin = session.user.role === 'admin'
 
     await prisma.sale.delete({
       where: {
         id: parseInt(id),
-        userId: parseInt(session.user.id)
+        ...(isAdmin ? {} : { userId: parseInt(session.user.id) })
       }
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE sale error:', error)
-    return NextResponse.json(
-      { error: 'Error al eliminar venta' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error al eliminar venta' }, { status: 500 })
   }
 }

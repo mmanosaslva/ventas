@@ -11,18 +11,18 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const isAdmin = session.user.role === 'admin'
+
     const sales = await prisma.sale.findMany({
-      where: { userId: parseInt(session.user.id) },
+      where: isAdmin ? {} : { userId: parseInt(session.user.id) },
+      include: { user: { select: { email: true, name: true } } },
       orderBy: { createdAt: 'desc' }
     })
 
     return NextResponse.json(sales)
   } catch (error) {
     console.error('GET sales error:', error)
-    return NextResponse.json(
-      { error: 'Error al obtener ventas' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error al obtener ventas' }, { status: 500 })
   }
 }
 
@@ -49,9 +49,6 @@ export async function POST(request: Request) {
     return NextResponse.json(sale)
   } catch (error) {
     console.error('POST sale error:', error)
-    return NextResponse.json(
-      { error: 'Error al registrar venta' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error al registrar venta' }, { status: 500 })
   }
 }

@@ -12,8 +12,16 @@ model User {
   email     String   @unique
   password  String
   name      String?
+  role      String   @default("user")
   createdAt DateTime @default(now())
   sales     Sale[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  price     Float?
+  createdAt DateTime @default(now())
 }
 
 model Sale {
