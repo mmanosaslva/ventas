@@ -5,18 +5,22 @@ const prisma = new PrismaClient()
 
 async function main() {
   const adminEmail = 'admin@abimarine.com'
-  const adminPassword = 'Admin2026!'
+  const adminPassword = 'Admin2026'
 
   const existing = await prisma.user.findUnique({
     where: { email: adminEmail }
   })
 
+  const hashedPassword = await hash(adminPassword, 12)
+
   if (existing) {
-    console.log('Admin user already exists')
+    const admin = await prisma.user.update({
+      where: { email: adminEmail },
+      data: { password: hashedPassword }
+    })
+    console.log('Admin password updated:', admin.email)
     return
   }
-
-  const hashedPassword = await hash(adminPassword, 12)
 
   const admin = await prisma.user.create({
     data: {
