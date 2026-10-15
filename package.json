@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "db:seed:demo": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-demo.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

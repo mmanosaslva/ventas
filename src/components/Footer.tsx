@@ -5,8 +5,8 @@ import Image from 'next/image'
 export default function Footer() {
   return (
     <footer className="bg-ink text-paper">
-      <div className="max-w-6xl mx-auto px-6 py-5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Image
             src="/plataforma50_logo.png"
             alt="Plataforma50"
@@ -15,7 +15,7 @@ export default function Footer() {
             className="brightness-0 invert opacity-80"
           />
 
-          <div className="flex items-center gap-4 text-sm text-paper/50">
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-sm text-paper/50">
             <span>Barranquilla, Colombia</span>
             <span className="text-paper/20">·</span>
             <a

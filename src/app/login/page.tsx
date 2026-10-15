@@ -4,6 +4,8 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Image from 'next/image'
+import { Field, PasswordField } from '@/components/Field'
+import { MailIcon } from '@/components/icons'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -32,7 +34,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6">
+    <div className="min-h-[70vh] flex items-center justify-center px-4 sm:px-6 py-8">
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
           <Image
@@ -45,8 +47,8 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-8">
-          <h1 className="font-display text-4xl text-ink mb-2">Entrar</h1>
-          <p className="text-ink/40">Accede a tu panel de ventas</p>
+          <h1 className="page-title">Entrar</h1>
+          <p className="page-subtitle">Accede a tu panel de ventas</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -58,24 +60,24 @@ export default function LoginPage() {
 
           <div>
             <label className="form-label">Email</label>
-            <input
+            <Field
               type="email"
+              icon={MailIcon}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="input-field"
               placeholder="tu@email.com"
+              autoComplete="email"
               required
             />
           </div>
 
           <div>
             <label className="form-label">Contraseña</label>
-            <input
-              type="password"
+            <PasswordField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-field"
               placeholder="••••••••"
+              autoComplete="current-password"
               required
             />
           </div>

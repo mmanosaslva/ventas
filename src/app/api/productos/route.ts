@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { parseStock } from '@/lib/inventory'
 
 export async function GET() {
   try {
@@ -36,8 +37,14 @@ export async function POST(request: Request) {
       ? null
       : parseFloat(body.price)
 
+    const stock = parseStock(body.stock)
+
     if (!name) {
       return NextResponse.json({ error: 'El nombre del producto es obligatorio' }, { status: 400 })
+    }
+
+    if (stock === 'invalid') {
+      return NextResponse.json({ error: 'El stock debe ser un número entero de 0 en adelante' }, { status: 400 })
     }
 
     if (price !== null && (isNaN(price) || price < 0)) {
@@ -50,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     const product = await prisma.product.create({
-      data: { name, price }
+      data: { name, price, stock: stock ?? null }
     })
 
     return NextResponse.json(product)

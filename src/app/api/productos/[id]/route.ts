@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { parseStock } from '@/lib/inventory'
 
 type Params = { params: { id: string } }
 
@@ -19,7 +20,7 @@ export async function PUT(request: Request, { params }: Params) {
     }
 
     const body = await request.json()
-    const data: { name?: string; price?: number | null } = {}
+    const data: { name?: string; price?: number | null; stock?: number | null } = {}
 
     if (body.name !== undefined) {
       const name = typeof body.name === 'string' ? body.name.trim() : ''
@@ -47,6 +48,12 @@ export async function PUT(request: Request, { params }: Params) {
       }
     }
 
+    const stock = parseStock(body.stock)
+    if (stock === 'invalid') {
+      return NextResponse.json({ error: 'El stock debe ser un número entero de 0 en adelante' }, { status: 400 })
+    }
+    if (stock !== undefined) data.stock = stock
+
     const product = await prisma.product.update({ where: { id }, data })
     return NextResponse.json(product)
   } catch (error) {
@@ -66,6 +73,17 @@ export async function DELETE(_request: Request, { params }: Params) {
     const id = parseInt(params.id)
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Producto no válido' }, { status: 400 })
+    }
+
+    const inCombo = await prisma.comboItem.findFirst({
+      where: { productId: id },
+      include: { combo: { select: { name: true } } }
+    })
+    if (inCombo) {
+      return NextResponse.json(
+        { error: `No se puede eliminar: está en el combo "${inCombo.combo.name}"` },
+        { status: 409 }
+      )
     }
 
     const product = await prisma.product.delete({ where: { id } })

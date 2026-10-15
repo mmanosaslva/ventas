@@ -12,6 +12,8 @@ export interface Sale {
   paymentMethod: string
   createdAt: Date
   userId: number
+  productId?: number | null
+  comboId?: number | null
   user?: { email: string; name: string | null }
 }
 

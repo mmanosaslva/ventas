@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Field, PasswordField } from '@/components/Field'
+import { MailIcon, UserIcon, ShieldIcon, TrashIcon } from '@/components/icons'
 
 interface User {
   id: number
@@ -85,10 +87,10 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
+    <div className="page-container">
       <div className="mb-10">
         <p className="stat-label mb-2">Panel de administración</p>
-        <p className="font-mono text-2xl md:text-4xl font-bold text-ink">Gestión de usuarios</p>
+        <h1 className="page-title">Gestión de usuarios</h1>
       </div>
 
       {error && (
@@ -103,33 +105,32 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-label">Nombre</label>
-              <input
+              <Field
                 type="text"
+                icon={UserIcon}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="input-field"
                 placeholder="Nombre"
               />
             </div>
             <div>
               <label className="form-label">Email</label>
-              <input
+              <Field
                 type="email"
+                icon={MailIcon}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="input-field"
                 placeholder="email@ejemplo.com"
                 required
               />
             </div>
             <div>
               <label className="form-label">Contraseña</label>
-              <input
-                type="password"
+              <PasswordField
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="input-field"
                 placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
@@ -146,7 +147,7 @@ export default function AdminPage() {
                       : 'border-ledger text-ink/50 hover:border-ink/20'
                   }`}
                 >
-                  Usuario
+                  <span className="inline-flex items-center justify-center gap-2"><UserIcon width={18} height={18} />Usuario</span>
                 </button>
                 <button
                   type="button"
@@ -157,7 +158,7 @@ export default function AdminPage() {
                       : 'border-ledger text-ink/50 hover:border-ink/20'
                   }`}
                 >
-                  Admin
+                  <span className="inline-flex items-center justify-center gap-2"><ShieldIcon width={18} height={18} />Admin</span>
                 </button>
               </div>
             </div>
@@ -210,7 +211,7 @@ export default function AdminPage() {
                           disabled={deletingId === user.id}
                           className="text-red-500 hover:text-red-700 text-sm transition-colors disabled:opacity-50"
                         >
-                          {deletingId === user.id ? '...' : 'Eliminar'}
+                          {deletingId === user.id ? '...' : <span className="inline-flex items-center gap-1.5"><TrashIcon width={16} height={16} />Eliminar</span>}
                         </button>
                       )}
                     </td>

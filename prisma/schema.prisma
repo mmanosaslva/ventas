@@ -21,7 +21,30 @@ model Product {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   price     Float?
+  stock     Int?     // null = sin control de inventario
   createdAt DateTime @default(now())
+  comboItems ComboItem[]
+  sales     Sale[]
+}
+
+model Combo {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  price     Float
+  createdAt DateTime    @default(now())
+  items     ComboItem[]
+  sales     Sale[]
+}
+
+model ComboItem {
+  id        Int     @id @default(autoincrement())
+  comboId   Int
+  productId Int
+  quantity  Int     @default(1)
+  combo     Combo   @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([comboId, productId])
 }
 
 model Sale {
@@ -33,4 +56,9 @@ model Sale {
   createdAt     DateTime @default(now())
   userId        Int
   user          User     @relation(fields: [userId], references: [id])
+  // Qué se vendió (para descontar/devolver stock). Null en ventas antiguas.
+  productId     Int?
+  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  comboId       Int?
+  combo         Combo?   @relation(fields: [comboId], references: [id], onDelete: SetNull)
 }

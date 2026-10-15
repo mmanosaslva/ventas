@@ -2,8 +2,7 @@ import type { Metadata } from "next"
 import { DM_Serif_Display, Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/components/AuthProvider"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
+import AppShell from "@/components/AppShell"
 
 export const dynamic = 'force-dynamic'
 
@@ -40,13 +39,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${dmSerif.variable} ${inter.variable} ${jetbrains.variable} font-body antialiased`}>
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AppShell>{children}</AppShell>
         </AuthProvider>
       </body>
     </html>

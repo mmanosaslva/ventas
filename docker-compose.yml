@@ -1,0 +1,16 @@
+# Base de datos de PRUEBA para desarrollo local (puerto 5433, solo localhost).
+# DATABASE_URL="postgresql://postgres:dev@localhost:5433/ventas"
+services:
+  db:
+    image: postgres:16
+    container_name: ventas-db
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: ventas
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - ventas-db-data:/var/lib/postgresql/data
+
+volumes:
+  ventas-db-data:

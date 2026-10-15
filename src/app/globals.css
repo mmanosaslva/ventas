@@ -18,7 +18,8 @@ body {
 }
 
 input:focus,
-select:focus {
+select:focus,
+button.input-field:focus-visible {
   outline: none;
   border-color: var(--copper);
   box-shadow: 0 0 0 3px rgba(196, 114, 47, 0.15);
@@ -61,6 +62,32 @@ select:focus {
     @apply w-full px-4 py-3 bg-paper border border-ledger rounded-lg
            text-ink placeholder:text-ink/30
            transition-all duration-150;
+  }
+
+  .page-title {
+    @apply font-display text-3xl sm:text-4xl text-ink mb-1;
+  }
+
+  .page-subtitle {
+    @apply text-ink/40 text-sm sm:text-base;
+  }
+
+  .page-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium
+           border-ledger text-ink/60 transition-colors;
+  }
+
+  .chip-active {
+    @apply border-copper bg-copper/10 text-copper;
+  }
+
+  .icon-btn {
+    @apply inline-flex items-center justify-center w-10 h-10 rounded-lg text-ink/50
+           hover:bg-ledger/60 hover:text-ink transition-colors;
   }
 
   .form-label {

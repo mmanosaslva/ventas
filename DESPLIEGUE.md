@@ -2,7 +2,7 @@
 
 Guía para mergear y desplegar la rama con **combos, filtros de ventas y el nuevo sidebar**.
 
-> El cambio de esquema solo **agrega** las tablas `Combo` y `ComboItem`. No modifica ni borra datos existentes. Aun así, el orden de los pasos importa.
+> El cambio de esquema solo **agrega**: las tablas `Combo` y `ComboItem`, la columna `Product.stock` y las columnas `Sale.productId` / `Sale.comboId`. Todas son opcionales (nullables), así que **no modifica ni borra datos existentes** y los productos actuales siguen vendiéndose igual (sin control de inventario hasta que se les ponga stock). Aun así, el orden de los pasos importa.
 
 ## Por qué el orden importa
 
@@ -10,7 +10,8 @@ El script de build es solo `next build`. Vercel **no** crea tablas. Si el códig
 
 - `/combos` falla.
 - **Eliminar un producto falla** (ahora consulta `ComboItem` antes de borrar).
-- Ventas, login y la lista de productos siguen funcionando.
+- **Registrar, editar y eliminar ventas falla**, y la lista de productos también (el código ya lee `stock`, `productId` y `comboId`).
+- Solo el login seguiría funcionando.
 
 Por eso: **primero la base de datos, después el merge.**
 
@@ -36,6 +37,7 @@ Comprueba a mano:
 - [ ] Registrar una venta de un producto y otra de un combo.
 - [ ] En `/ventas`: filtros, orden y "Agrupar por producto".
 - [ ] No se puede eliminar un producto que está dentro de un combo.
+- [ ] Inventario: producto con stock 3, intentar vender 5 → se rechaza con aviso; vender un combo descuenta cada artículo; editar/eliminar una venta ajusta el stock.
 - [ ] Revisar a ancho móvil, tablet y laptop.
 
 Verificación automática:
@@ -87,7 +89,7 @@ Si Vercel genera un *preview deploy* para el PR, ábrelo y revisa. **Ojo:** el p
    ```bash
    DATABASE_URL="URL_DE_PRODUCCION" npx prisma db push
    ```
-   Prisma debe indicar que **crea** `Combo` y `ComboItem`. Si propone **borrar o modificar** algo existente, **detente** y revisa antes de aceptar.
+   Prisma debe indicar que **crea** `Combo` y `ComboItem` y **agrega** columnas (`stock`, `productId`, `comboId`). Si propone **borrar o modificar** algo existente, **detente** y revisa antes de aceptar.
 3. **No ejecutes `npx prisma db seed` en producción.** El seed restablece la contraseña del admin a `Admin2026` (ver [prisma/seed.ts](prisma/seed.ts)).
 
 No guardes la URL de producción en tu `.env` local. El `.env` debe seguir apuntando al Docker.
@@ -115,6 +117,8 @@ No se añadieron variables nuevas en este cambio.
 - [ ] `/combos` abre y lista (vacío está bien).
 - [ ] Crear un combo de prueba y registrar una venta con él.
 - [ ] Eliminar un producto que **no** esté en un combo funciona.
+- [ ] Un producto existente (sin stock) se sigue vendiendo con normalidad.
+- [ ] Ponerle stock a un producto, venderlo y comprobar que baja; borrar esa venta y comprobar que sube.
 - [ ] `/ventas` muestra las ventas anteriores con sus montos intactos.
 - [ ] Prueba rápida en el celular.
 
